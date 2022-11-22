@@ -82,33 +82,36 @@ public class Scanner {
 		String lineString = "";
 
 		if(line != null){
+            if (line.isBlank()) return;
             //Calculates amount of blanks and handles indentation/dedentation of the current line
             int blanks = 0;
             try{
                 while(line.charAt(blanks) == ' '){
                     blanks++;
                 }
-                if(line.charAt(blanks) == '#'){
-                    assert true;
-                }
                 //Algorithm for indent/dendent handling from the lecture
-                else{
+                {
+                    line = line.split("#")[0];
                     line = expandLeadingTabs(line); 
-                    int indent = findIndent(line);
-
-                    if( indent > indents.peek()){
-                        indents.push(indent);
-                        curLineTokens.add(new Token(indentToken, curLineNum()));
+                    int spaces = findIndent(line);
+                    if(findIndent(line) >= line.length()){
+                        return;
                     }
-                    else{
-                        while(indent < indents.peek()){
+                    if( spaces > indents.peek()){
+                        indents.push(spaces);
+                        curLineTokens.add(0, new Token(indentToken, curLineNum()));
+                    }
+                    else if (spaces < indents.peek()){
+                        int dedents = 0;
+                        while(spaces < indents.peek()){
                             indents.pop();
-                            curLineTokens.add(new Token(dedentToken, curLineNum()));
+                            curLineTokens.add(dedents, new Token(dedentToken, curLineNum()));
+                            dedents++;
                         }
                     }
-                    if(indent != indents.peek()){
+                    if(spaces != indents.peek()){
                         int lineNr = curLineNum();
-                        System.out.println("Error : Bad use of indentation / dedentation" + lineNr);
+                        System.out.println("Error : Bad use of indentation / dedentation on line: " + lineNr);
                         System.exit(1);
                     }
                 }
@@ -235,6 +238,7 @@ public class Scanner {
                         intToken.integerLit = Integer.parseInt(lineString);
                         curLineTokens.add(intToken);
                     }
+                    /* 
                     else{
                         double floaty = Double.parseDouble(lineString); 
                         if(floaty % 1 == 0){
@@ -242,12 +246,13 @@ public class Scanner {
                             System.out.println("Error:" + curLineNum() + " Illegal float literal: " + currChar);
                             System.exit(1);
                         }
-                        else{
-                            Token fToken = new Token(floatToken, curLineNum());
-                            fToken.floatLit = Double.parseDouble(lineString);
-                            curLineTokens.add(fToken);
-                        }
+                    */
+                    else{
+                        Token fToken = new Token(floatToken, curLineNum());
+                        fToken.floatLit = Double.parseDouble(lineString);
+                        curLineTokens.add(fToken);
                     }
+                    
                 
                 }
                 lineString = "";

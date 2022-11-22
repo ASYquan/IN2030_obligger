@@ -11,33 +11,58 @@ import static no.uio.ifi.asp.scanner.TokenKind.*;
 
 public class AspExpr extends AspSyntax {
     //-- Must be changed in part 2:
-    // ArrayList<AspAndTest> andTests = new ArrayList<>();
+    ArrayList<AspAndTest> andTests = new ArrayList<>();
 
     AspExpr(int n) {
-	super(n);
+        super(n);
     }
 
 
     public static AspExpr parse(Scanner s) {
-	enterParser("expr");
+    	enterParser("expr");
 
-	//-- Must be changed in part 2:
-	AspExpr ae = null;
+	    //-- Must be changed in part 2:
+	    AspExpr ae = new AspExpr(s.curLineNum());
+ 
+        while(true){
+            ae.andTests.add(AspAndTest.parse(s));
+            if(s.curToken().kind != orToken){
+                break;
+            }
+            else {
+                skip(s, orToken);
+            }
+        }
 
-	leaveParser("expr");
-	return ae;
+        leaveParser("expr");
+        return ae;
     }
 
 
     @Override
     public void prettyPrint() {
 	//-- Must be changed in part 2:
+        int count = 0;
+        for(AspAndTest prettyAndTest: andTests){
+            if(count > 0){
+                prettyWrite(" or ");
+            }
+            prettyAndTest.prettyPrint();
+            count++;
+        }
     }
 
 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
 	//-- Must be changed in part 3:
-	return null;
+        RuntimeValue returnValue = andTests.get(0).eval(curScope);
+        for(int i=1; i<andTests.size(); i++){
+            if(returnValue.getBoolValue("or operand", this)){
+                return returnValue;
+            }
+            returnValue = andTests.get(i).eval(curScope);
+        }
+        return returnValue;
     }
 }

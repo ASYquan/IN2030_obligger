@@ -10,7 +10,7 @@ public abstract class AspSyntax {
     public int lineNum;
 
     AspSyntax(int n) {
-	lineNum = n;
+    	lineNum = n;
     }
 
 

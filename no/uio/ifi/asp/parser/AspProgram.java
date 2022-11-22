@@ -11,36 +11,47 @@ import static no.uio.ifi.asp.scanner.TokenKind.*;
 
 public class AspProgram extends AspSyntax {
     //-- Must be changed in part 2:
-    // ArrayList<AspStmt> stmts = new ArrayList<>();
+    ArrayList<AspStmt> stmts = new ArrayList<>();
 
     AspProgram(int n) {
-	super(n);
+        super(n);
     }
 
 
     public static AspProgram parse(Scanner s) {
-	enterParser("program");
-
-	AspProgram ap = new AspProgram(s.curLineNum());
-	while (s.curToken().kind != eofToken) {
 	    //-- Must be changed in part 2:
-	    // ap.stmts.add(AspStmt.parse(s));
-	}
+    	enterParser("program");
 
-	leaveParser("program");
-	return ap;
+    	AspProgram ap = new AspProgram(s.curLineNum());
+        while (s.curToken().kind != eofToken) {
+   
+            if(s.curToken().kind == newLineToken) {
+                System.out.println(s.curLineNum());
+                skip(s, newLineToken);
+                
+            } 
+            else if(s.curToken().kind != eofToken){
+                ap.stmts.add(AspStmt.parse(s));
+            }
+        }
+
+        leaveParser("program");
+        return ap;
     }
 
 
     @Override
     public void prettyPrint() {
 	//-- Must be changed in part 2:
+        for (AspStmt as : stmts) {
+            as.prettyPrint();
+        }
     }
 
 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
 	//-- Must be changed in part 4:
-	return null;
+    	return null;
     }
 }

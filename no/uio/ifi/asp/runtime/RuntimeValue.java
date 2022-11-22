@@ -5,6 +5,7 @@ package no.uio.ifi.asp.runtime;
 import java.util.ArrayList;
 
 import no.uio.ifi.asp.main.*;
+
 import no.uio.ifi.asp.parser.AspSyntax;
 
 public abstract class RuntimeValue {
@@ -60,7 +61,7 @@ public abstract class RuntimeValue {
 
     public RuntimeValue evalGreaterEqual(RuntimeValue v, AspSyntax where) {
 	runtimeError("'>=' undefined for "+typeName()+"!", where);
-	return null;  // Required by the compiler!
+	return null;  // Required by the if (line.isBlank()) return;compiler!
     }
 
     public RuntimeValue evalIntDivide(RuntimeValue v, AspSyntax where) {
@@ -143,5 +144,11 @@ public abstract class RuntimeValue {
 				     AspSyntax where) {
 	runtimeError("Function call '(...)' undefined for "+typeName()+"!", where);
 	return null;  // Required by the compiler!
+    }
+
+    //To avoid errors!
+    public ArrayList getElements(AspSyntax where) {
+        runtimeError("function only for lists!", where);
+        return null;
     }
 }

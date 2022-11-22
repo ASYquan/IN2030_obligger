@@ -2,7 +2,7 @@
 
 package no.uio.ifi.asp.runtime;
 
-import no.uio.ifi.asp.main.*;
+//import no.uio.ifi.asp.main.*;
 import no.uio.ifi.asp.parser.AspSyntax;
 
 public class RuntimeBoolValue extends RuntimeValue {
