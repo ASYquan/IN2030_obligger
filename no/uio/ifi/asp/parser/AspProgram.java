@@ -26,7 +26,7 @@ public class AspProgram extends AspSyntax {
         while (s.curToken().kind != eofToken) {
    
             if(s.curToken().kind == newLineToken) {
-                System.out.println(s.curLineNum());
+                //System.out.println(s.curLineNum());
                 skip(s, newLineToken);
                 
             } 
@@ -50,8 +50,15 @@ public class AspProgram extends AspSyntax {
 
 
     @Override
-    public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-	//-- Must be changed in part 4:
-    	return null;
+    public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue{
+        for (AspStmt as: stmts) {
+            try {
+                as.eval(curScope);
+            } catch (RuntimeReturnValue rrv) {
+                RuntimeValue.runtimeError("Return statement outside function!", rrv.lineNum);
+            }
+        }
+            return null;
     }
 }
+

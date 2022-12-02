@@ -21,40 +21,44 @@ public class RuntimeScope {
     }
 
     public RuntimeScope(RuntimeScope oScope) {
-	// Used by all user scopes
-	outer = oScope;
+		// Used by all user scopes
+		outer = oScope;
     }
 
 
     public void assign(String id, RuntimeValue val) {
-	decls.put(id, val);
+		decls.put(id, val);
+ 		if(globalNames.contains(id)){
+			Main.globalScope.assign(id, val);
+		} 
     }
-
+	//From lecture week 44 
     public RuntimeValue find(String id, AspSyntax where) {
-	if (globalNames.contains(id)) {
-	    RuntimeValue v = Main.globalScope.decls.get(id);
-	    if (v != null) return v;
-	} else {
-	    RuntimeScope scope = this;
-	    while (scope != null) {
-		RuntimeValue v = scope.decls.get(id);
-		if (v != null) return v;
-		scope = scope.outer;
-	    }
-	}
-	RuntimeValue.runtimeError("Name " + id + " not defined!", where);
-	return null;  // Required by the compiler.
+ 		if (globalNames.contains(id)) {
+			RuntimeValue v = Main.globalScope.decls.get(id);
+			if (v != null) return v;
+		} else {
+			RuntimeScope scope = this;
+			while (scope != null) {
+				RuntimeValue v = scope.decls.get(id);
+				if (v != null) return v;
+				scope = scope.outer;
+			}
+		}
+		RuntimeValue.runtimeError("Name " + id + " not defined!", where);
+		return null;  // Required by the compiler. 
+
     }
 
     public boolean hasDefined(String id) {
-	return decls.get(id) != null;
+	    return decls.get(id) != null;
     }
 
     public boolean hasGlobalName(String id) {
-	return globalNames.contains(id);
+	    return globalNames.contains(id);
     }
 
     public void registerGlobalName(String id) {
-	globalNames.add(id);
+	    globalNames.add(id);
     }
 }

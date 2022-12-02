@@ -44,7 +44,7 @@ class AspAssignment extends AspSmallStmt{
 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-       RuntimeValue expression = ae.eval(curScope);
+      RuntimeValue expression = ae.eval(curScope);
 
       // Inserting AspName.name in scope
       if(sub.size() == 0){

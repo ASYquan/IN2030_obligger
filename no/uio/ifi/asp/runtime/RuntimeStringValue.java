@@ -26,6 +26,10 @@ public class RuntimeStringValue extends RuntimeValue {
             return "'" + strValue + "'";
         }
     }
+    @Override
+    public String printing() {
+        return strValue;
+    }
     
     @Override
     public String toString() {
@@ -84,11 +88,7 @@ public class RuntimeStringValue extends RuntimeValue {
     @Override
     public RuntimeValue evalGreater(RuntimeValue v, AspSyntax where){
       if (v instanceof RuntimeStringValue){
-
-        if (strValue.length() > v.getStringValue("String", where).length()){
-            return new RuntimeBoolValue(true);
-        }
-        return new RuntimeBoolValue(false);
+        return new RuntimeBoolValue(strValue.compareTo(v.getStringValue(strValue, where)) > 0);
       }
       runtimeError("'>' / 'greater than' is undefined for " + typeName() 
        + " and " + v.typeName(), where);
@@ -98,10 +98,7 @@ public class RuntimeStringValue extends RuntimeValue {
     @Override
     public RuntimeValue evalGreaterEqual(RuntimeValue v, AspSyntax where) {
         if (v instanceof RuntimeStringValue){
-            if (strValue.length() >= v.getStringValue("String", where).length()){
-                return new RuntimeBoolValue(false);
-            }
-            return new RuntimeBoolValue(true);
+            return new RuntimeBoolValue(strValue.compareTo(v.getStringValue(strValue, where)) >= 0);
         }
         runtimeError("'>=' / 'greaterEqual' is undefined for " + typeName()
          + " and " + v.typeName(), where);
@@ -111,11 +108,9 @@ public class RuntimeStringValue extends RuntimeValue {
     @Override
     public RuntimeValue evalLess(RuntimeValue v, AspSyntax where) {
         if (v instanceof RuntimeStringValue){
-            if (strValue.length() < v.getStringValue("String", where).length()){
-                return new RuntimeBoolValue(false);
-            }
-            return new RuntimeBoolValue(true);
+            return new RuntimeBoolValue(strValue.compareTo(v.getStringValue(strValue, where)) < 0);
         }
+        
         runtimeError("'<' or 'less than' is undefined for " + typeName()
         + " and " + v.typeName(), where);
         return null;
@@ -124,10 +119,7 @@ public class RuntimeStringValue extends RuntimeValue {
     @Override
     public RuntimeValue evalLessEqual(RuntimeValue v, AspSyntax where) {
             if (v instanceof RuntimeStringValue){
-                if (strValue.length() <= v.getStringValue("String", where).length()){
-                    return new RuntimeBoolValue(true);
-                }
-                return new RuntimeBoolValue(false);
+                return new RuntimeBoolValue(strValue.compareTo(v.getStringValue(strValue, where)) <= 0);
             }
             runtimeError("'<=' or 'less than or equals' is undefined for " 
             + typeName() + " and " + v.typeName(), where);

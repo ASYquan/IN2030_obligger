@@ -38,4 +38,6 @@ abstract class AspSmallStmt extends AspSyntax {
         leaveParser("small stmt");
         return as;
         }
+    abstract RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue;
+
 }

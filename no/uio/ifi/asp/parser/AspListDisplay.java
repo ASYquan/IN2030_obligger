@@ -60,7 +60,6 @@ public class AspListDisplay extends AspAtom {
         for(AspExpr ex: expr){
             returnList.appendElement(ex.eval(curScope));
         }
-
         return returnList;
     }
 

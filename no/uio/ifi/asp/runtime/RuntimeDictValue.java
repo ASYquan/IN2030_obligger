@@ -63,7 +63,7 @@ public class RuntimeDictValue extends RuntimeValue {
             }
 
         }
-        runtimeError("Index value:" + v + "of" + typeName() + "does not exis", where);
+        runtimeError("Index value:" + v + "of" + typeName() + "does not exist", where);
         return null;
     }
 

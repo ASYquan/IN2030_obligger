@@ -29,33 +29,40 @@ public class RuntimeFuncValue extends RuntimeValue{
     }
 
     @Override
+    public String toString(){
+      return name.replaceFirst("^0+(?!$)'", "");
+    }
+
+    @Override
     public RuntimeValue evalFuncCall(ArrayList<RuntimeValue> actualParams, AspSyntax where){
-        RuntimeValue returnVal = null;
+        RuntimeValue returns = null;
 
         RuntimeValue val;
 
+
         if(actualParams.size() == args.size()){
             RuntimeScope newScope = new RuntimeScope(this.scope);
-            //System.out.println(params.size());
             for(int i = 0; i < args.size(); i++){
                 val = actualParams.get(i);
                 if(val != null){
                     newScope.assign(args.get(i).getStringValue("string", where), val);
-                }else{
+                }
+                else{
                     newScope.assign(args.get(i).getStringValue("string", where), actualParams.get(i));
                 }
             }
+            //From lecture week 45
             try{
                 val = funcDef.evalFunc(newScope);
             }
             catch(RuntimeReturnValue v){
-                return v.value;
+                return v.value; 
             }
 
         }else{
             Main.error("arguments are not equal");
         }
-        return returnVal;
+        return returns;
     }
 }
 

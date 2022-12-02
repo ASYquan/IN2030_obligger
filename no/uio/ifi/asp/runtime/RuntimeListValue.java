@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 
 public class RuntimeListValue extends RuntimeValue{
-    private ArrayList<RuntimeValue> elements;
+    public ArrayList<RuntimeValue> elements;
 
     public RuntimeListValue(ArrayList<RuntimeValue> list){
         elements = list; 
@@ -24,8 +24,22 @@ public class RuntimeListValue extends RuntimeValue{
 
     //Helps with retrieval of elements in a list
     public ArrayList<RuntimeValue> getElements(AspSyntax where){
-        return elements;
+        if (elements.isEmpty()){
+            return null;
+        }
+        else{
+            return elements;
+        }
     }
+        //Function overload
+        public ArrayList<RuntimeValue> getElements(String what, AspSyntax where){
+            if (elements.isEmpty()){
+                return null;
+            }
+            else{
+                return elements;
+            }
+        }
 
     //Helps with indexation of an element in a list
     public RuntimeValue indexElement(int index){

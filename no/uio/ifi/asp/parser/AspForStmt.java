@@ -33,9 +33,6 @@ class AspForStmt extends AspCompoundStmt{
 
     @Override
     public void prettyPrint() {
-        AspName prettyName = an;
-        AspExpr prettyExpr = ae;
-        AspSuite prettySuite = as;
         prettyWrite("for ");
         an.prettyPrint();
         prettyWrite(" in ");
@@ -51,14 +48,14 @@ class AspForStmt extends AspCompoundStmt{
         RuntimeValue testList = ae.eval(curScope);
 
         if(testList instanceof RuntimeListValue){
-        ArrayList<RuntimeValue> list = ((RuntimeListValue) testList).getElements(this);
+            ArrayList<RuntimeValue> list = ((RuntimeListValue) testList).getElements(this);
 
-        for(int i=0; i<list.size()-1; i++){
-            trace("for #" + (i+1) + ": " + an.name + " = " + list.get(i).showInfo());
-            curScope.assign(an.name, list.get(i));
-            testList = ae.eval(curScope);
-            as.eval(curScope);
-        }
+            for(int i=0; i<list.size()-1; i++){
+                trace("for #" + (i+1) + ": " + an.name + " = " + list.get(i).showInfo());
+                curScope.assign(an.name, list.get(i));
+                testList = ae.eval(curScope);
+                as.eval(curScope);
+            }
 
         }
         else if(testList instanceof RuntimeStringValue){

@@ -46,21 +46,19 @@ class AspPrimary extends AspSyntax{
 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-        //-- Must be changed in part 3:
-        RuntimeValue returnValue = aa.eval(curScope);
-        ArrayList<RuntimeValue> args;
-    
-        //Handling of lists and other supported dataStructures, in consideration of primary suffix index
-        for(AspPrimarySuffix suffix : primarySuffix){
-          if(returnValue instanceof RuntimeDictValue || returnValue instanceof RuntimeListValue
-              || returnValue instanceof RuntimeStringValue){
-              returnValue = returnValue.evalSubscription(suffix.eval(curScope), this);
-          }else if(suffix instanceof AspArguments){
-            args = suffix.eval(curScope).getElements(this);
-            returnValue = returnValue.evalFuncCall(args, this);
-          }
+        RuntimeValue v = aa.eval(curScope);
+        if (!primarySuffix.isEmpty()) {
+            for (AspPrimarySuffix pSuffix: primarySuffix) {
+                if (pSuffix instanceof AspSubscription) {
+                    RuntimeValue sub = pSuffix.eval(curScope);
+                    v = v.evalSubscription(sub, this);
+                } else if (pSuffix instanceof AspArguments) {
+                    RuntimeListValue args = (RuntimeListValue) pSuffix.eval(curScope);
+                    trace("Call function " + v.toString().replaceAll("\'", "") + " with params " + args.showInfo());
+                    v = v.evalFuncCall(args.elements, this);
+                }
+            }
         }
-        return returnValue;
-      }
-
+        return v;
+    }
 }

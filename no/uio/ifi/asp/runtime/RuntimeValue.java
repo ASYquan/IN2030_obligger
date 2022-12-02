@@ -12,7 +12,7 @@ public abstract class RuntimeValue {
     abstract String typeName();
 
     public String showInfo() {
-	return toString();
+	    return toString();
     }
 
     // For parts 3 and 4:
@@ -149,6 +149,11 @@ public abstract class RuntimeValue {
     //To avoid errors!
     public ArrayList getElements(AspSyntax where) {
         runtimeError("function only for lists!", where);
+        return null;
+    }
+
+    //To avoid errors!
+    public String printing() {
         return null;
     }
 }

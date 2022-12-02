@@ -14,7 +14,8 @@ public class AspSuite extends AspSyntax {
     }
 	AspSmallStmtList smallstmtlist; 
 	ArrayList<AspStmt> stmtLst = null;
-        static int nCountSC = 0;	
+	
+    static int nCountSC = 0;	
 	public static AspSuite parse(Scanner s){
 		enterParser("suite");
 		AspSuite suite = new AspSuite(s.curLineNum());
@@ -58,9 +59,21 @@ public class AspSuite extends AspSyntax {
 	      smallstmtlist.prettyPrint();
 	    }
 	  }	
+
+
+	@Override
 	public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-	//-- Must be changed in part 3:
-		return null;
+        RuntimeValue v = null;
+
+        if (smallstmtlist != null) {
+            v = smallstmtlist.eval(curScope);
+        } else {
+            for (AspStmt as : stmtLst) {
+                v = as.eval(curScope);
+            }
+        }
+        return v;
     }
+    
 
 }

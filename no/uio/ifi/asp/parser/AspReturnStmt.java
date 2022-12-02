@@ -9,7 +9,7 @@ import static no.uio.ifi.asp.scanner.TokenKind.*;
 
 class AspReturnStmt extends AspSmallStmt{
     AspExpr ae;
-
+    int lineNr;
     AspReturnStmt(int n){
         super(n);
     }
@@ -32,11 +32,13 @@ class AspReturnStmt extends AspSmallStmt{
         ae.prettyPrint();
     }
 
-
+    //Had heard that by throwing the return-value, it "throws" the return-value higher up in
+    //the datastrcture, instead of continuing recursive-call. 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-	//-- Must be changed in part 3:
-	return null;
+        RuntimeValue v = ae.eval(curScope);
+        trace("return " + v.showInfo());
+        throw new RuntimeReturnValue(v, lineNr);
     }
 
 }

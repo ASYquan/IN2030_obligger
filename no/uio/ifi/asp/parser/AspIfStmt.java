@@ -10,40 +10,34 @@ import static no.uio.ifi.asp.scanner.TokenKind.*;
 public class AspIfStmt extends AspCompoundStmt {
     ArrayList <AspExpr> expr = new ArrayList<>();
     ArrayList <AspSuite> suite = new ArrayList<>();
-    AspIfStmt elifs;
-    Boolean hasElse = false;
+    AspSuite hasSuite;
 
     AspIfStmt(int n) {
         super(n);
     }
 
-    static AspIfStmt parse(Scanner s) {
+    public static AspIfStmt parse(Scanner s) {
         enterParser("if stmt");
 
-        AspIfStmt ais = new AspIfStmt(s.curLineNum());
-
+        AspIfStmt ifstmt = new AspIfStmt(s.curLineNum());
         skip(s, ifToken);
+        ifstmt.expr.add(AspExpr.parse(s));
+        skip(s, colonToken);
+        ifstmt.suite.add(AspSuite.parse(s));
 
-        while (true) {
-            ais.expr.add(AspExpr.parse(s));
-            skip(s, colonToken);
-            ais.suite.add(AspSuite.parse(s));
-            if (s.curToken().kind != elifToken) {
-                break;
-            }
+        while (s.curToken().kind == elifToken) {
             skip(s, elifToken);
-        }
-        if (s.curToken().kind == newLineToken){
-            skip(s, newLineToken);
+            ifstmt.expr.add(AspExpr.parse(s));
+            skip(s, colonToken);
+            ifstmt.suite.add(AspSuite.parse(s));
         }
         if (s.curToken().kind == elseToken) {
-            ais.hasElse = true;
             skip(s, elseToken);
             skip(s, colonToken);
-            ais.suite.add(AspSuite.parse(s));
+            ifstmt.hasSuite = AspSuite.parse(s);
         }
         leaveParser("if stmt");
-        return ais;
+        return ifstmt;
     }
 
   @Override
@@ -68,9 +62,28 @@ public class AspIfStmt extends AspCompoundStmt {
       suite.get(suite.size()-1).prettyPrint();
     }
   }
+
+
   @Override
   public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue {
-    //Part 4
-    return null;
-  }
+        RuntimeValue v = null;
+        int i = 0;
+
+        for (; i < expr.size(); i++) {
+            v = expr.get(i).eval(curScope);
+            if (v.getBoolValue("bool", this) == true) {
+                trace("if True alt #" + (i+1) + ": ...");
+                v = suite.get(i).eval(curScope);
+                return v;
+            }
+        }
+        if (hasSuite != null) {
+            trace("else: ...");
+            v = hasSuite.eval(curScope);
+            return v;
+        }
+        return null;
+    }
 }
+  
+

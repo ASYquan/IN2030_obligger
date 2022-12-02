@@ -8,6 +8,7 @@ import no.uio.ifi.asp.scanner.*;
 import static no.uio.ifi.asp.scanner.TokenKind.*;
 
 public class AspFuncDef extends AspCompoundStmt{
+    AspName str_name;
     AspSuite as;
     ArrayList<AspName> name = new ArrayList<>();
 
@@ -15,28 +16,35 @@ public class AspFuncDef extends AspCompoundStmt{
         super(n);
     }
 
-    static AspFuncDef parse(Scanner s){
-        enterParser("func def");
-
-        AspFuncDef afd = new AspFuncDef(s.curLineNum());
-
-        skip(s, defToken);
+    static AspFuncDef parse(Scanner s)
+    {
+      enterParser("Function definition");
+      AspFuncDef afd = new AspFuncDef(s.curLineNum());
+      afd.name = new ArrayList <> ();
+  
+      // Lagrer funksjonsnavn
+      skip(s, defToken);
+      afd.str_name = AspName.parse(s);
+      skip(s, leftParToken);
+  
+      // Lagrer navn på formelle paramatre
+      if (s.curToken().kind != rightParToken)
+      {
         afd.name.add(AspName.parse(s));
-        skip(s, leftParToken);
-
-        while(s.curToken().kind != rightParToken){
-            afd.name.add(AspName.parse(s));
-            if(s.curToken().kind != commaToken){
-                break;
-            }
-            skip(s, commaToken);
-        }
-        skip(s, rightParToken);
-        skip(s, colonToken);
-        afd.as = AspSuite.parse(s);
-
-        leaveParser("func def");
-        return afd;
+      }
+      while (s.curToken().kind != rightParToken)
+      {
+        skip(s, commaToken);
+        afd.name.add(AspName.parse(s));
+      }
+      skip(s, rightParToken);
+      skip(s, colonToken);
+  
+      // Lagrer innsiden av funksjonen
+      afd.as = AspSuite.parse(s);
+      leaveParser("Function definition");
+  
+      return afd;
     }
 
    @Override
@@ -65,8 +73,28 @@ public class AspFuncDef extends AspCompoundStmt{
 
     @Override
     public RuntimeValue eval(RuntimeScope curScope) throws RuntimeReturnValue{
+  
+        ArrayList<RuntimeValue> args = new ArrayList<>();
+        RuntimeStringValue func = new RuntimeStringValue(str_name.name);
+  
+        for (AspName formal: name){
+            args.add(new RuntimeStringValue(formal.name));
+        }
+
+        //Stores relevant parameters as a string in the input 
+        RuntimeFuncValue newFunction = new RuntimeFuncValue(func, args, curScope, this);
+        curScope.assign(str_name.name, newFunction);
+    
+        trace("def " + str_name.name);
+    
         return null;
-      }
+    }
+  
+    //A function used in RuntimeFuncValue to create a scope 
+    public RuntimeValue runFunc(RuntimeScope curScope) throws RuntimeReturnValue{
+      return as.eval(curScope);
+    }
+    
 
     public RuntimeValue evalFunc(RuntimeScope curScope) throws RuntimeReturnValue {
 	//-- Must be changed in part 3:
